@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  has_many :microposts, dependent: :destroy #Here the option dependent: :destroy arranges for the dependent microposts to be destroyed when the user itself is destroyed.
   attr_accessor :remember_token, :activation_token, :reset_token
   before_save :downcase_email
   before_create :create_activation_digest
@@ -11,6 +12,10 @@ class User < ApplicationRecord
   #Activates an account
   def activate
     update_columns(activated: true, activated_at: Time.zone.now)
+  end
+  
+  def feed
+    Micropost.where("user_id = ?", id)
   end
   
   #Sends activation email.
